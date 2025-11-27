@@ -136,6 +136,12 @@ def main(argv):
       x = Contour[:,0]
       y = Contour[:,1]
 
+      x = np.linspace(0,1,100)
+      y = np.linspace(0,1,100)
+      for theta in range(100):
+         x[theta] = 1000*np.cos(theta/100 * np.pi *2)
+         y[theta] = 1000*np.sin(theta/100 * np.pi *2)
+
       if x[0]==x[-1] and y[0]==y[-1]:
         #print('Same first and last points in contour file')
         Npt = len(x)-1
@@ -143,7 +149,19 @@ def main(argv):
         Npt = len(x)
       # only one closed contour
       lines=[Npt]
+   x = np.linspace(0,1,100)
+   y = np.linspace(0,1,100)
+   for theta in range(100):
+      x[theta] = 1000*np.cos(theta/100 * np.pi *2)
+      y[theta] = 1000*np.sin(theta/100 * np.pi *2)
 
+   if x[0]==x[-1] and y[0]==y[-1]:
+      #print('Same first and last points in contour file')
+      Npt = len(x)-1
+   else:
+        Npt = len(x)
+      # only one closed contour
+   lines=[Npt]
    print('found %i points'%Npt)
 
    # Open the output file
