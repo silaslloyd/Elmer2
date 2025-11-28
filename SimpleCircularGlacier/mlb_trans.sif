@@ -265,7 +265,8 @@ Body Force 1
 End
 
 Body Force 2
-  Zs Accumulation = Real 1
+  Zs Accumulation Variable "Coordinate
+	Real MATC "1000*(tx(0)^2+tx(1)^2)/rad^2"
 End
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
