@@ -20,8 +20,9 @@ from datetime import datetime
 plt.close('all')
 
 def bed(x,y,abx, DD, rr, ar, lr, Ly, q1, q2, am, lm): 
-    y = (0.5*Ly+q1*x*np.exp(-q2*x))*2*y/Ly + am*np.sin(2*np.pi*x/lm)
-    bed = 0*x*y
+    y = (0.5*Ly+q1*x*np.exp(-q2*x))*2*y/Ly + am*np.sin(2*np.pi*x/lm) 
+    print(DD)
+    bed = .0 - 0*x - 0*y
     return bed
 
 bed_version = 'bed1'
@@ -69,17 +70,7 @@ zb = bed(X, Y,
 # 4400 is the maximum altitude (SMB is zero above this altitude)
 
 cs = plt.contour(x,y,zb, [4400])
-p = cs.collections[0].get_paths()[0]
-v = p.vertices
-n = len(v[:,0])
-xc = np.zeros(n+2)
-yc = np.zeros(n+2)
-xc[0:n] = v[0:n,0]
-yc[0:n] = v[0:n,1]
-xc[n] = Lx
-yc[n] = Y0+Ly
-xc[n+1] = xc[0]
-yc[n+1] = yc[0]
+
 
 # plot this bed 
 plt.figure()
@@ -90,7 +81,7 @@ plt.colorbar()
 plt.show()
 
 # Save the contour in an ascii file 
-np.savetxt('SyntBed_Contour_'+bed_version+'.dat',np.column_stack((xc,yc)), fmt="%10.2f %10.2f")
+#np.savetxt('SyntBed_Contour_'+bed_version+'.dat',np.column_stack((xc,yc)), fmt="%10.2f %10.2f")
 
 
 # Save it as a netcdf grid
