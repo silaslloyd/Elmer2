@@ -49,8 +49,8 @@ Simulation
   Timestepping Method = "bdf"
   BDF Order = 1
   Output Intervals(1) = 1       !#OutPutIntervals
-  Timestep Intervals(1) = 5!#Intervals
-  Timestep Sizes(1) = $0.0001/365
+  Timestep Intervals(1) = 50!#Intervals
+  Timestep Sizes(1) = $0.001/365
 
 
 
@@ -266,7 +266,7 @@ End
 
 Body Force 2
   Zs Accumulation Variable "Coordinate
-	Real MATC "10*((tx(0)^2+tx(1)^2)/rad^2 - 0.5*tx(0)^0)"
+	Real MATC "10*(-(tx(0)^2+tx(1)^2)/rad^2 + 0.5*tx(0)^0)"
 End
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
