@@ -50,7 +50,7 @@ Simulation
   BDF Order = 1
   Output Intervals(1) = 1       !#OutPutIntervals
   Timestep Intervals(1) = 50!#Intervals
-  Timestep Sizes(1) = $0.001/365
+  Timestep Sizes(1) = $1/365
 
 
 
