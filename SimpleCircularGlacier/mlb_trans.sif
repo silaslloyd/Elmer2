@@ -247,7 +247,7 @@ Initial Condition 2
   $alfa=0
   $h0=1000
   $dh=900.
-  $rad=10000.0
+  $rad=80000.0
 
   Zs  Variable "Coordinate"
     Real MATC "h0 -dh*(tx(0)^2+tx(1)^2)/rad^2-alfa*tx(0)"
