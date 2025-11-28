@@ -81,7 +81,7 @@ Solver 2
   Equation = "Read DEMs 2"
   Variable = -nooutput "dumy"
 
-  Procedure = "GridDataReader1" "GridDataReader"
+  Procedure = "GridDataReader" "GridDataReader"
   
   !---- NOTE: File is case sensitive, String is not!
   Filename = File "SurfDEM.nc"

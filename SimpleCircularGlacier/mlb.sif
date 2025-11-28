@@ -224,8 +224,8 @@ End
 
 Boundary Condition 1
   ComputeNormal = Logical False
-  Name = "sides1"
-  Target Boundaries(1) = 1
+  Name = "sides"
+  Target Boundaries(4) = 1 2 3 4
   ! no slip
   !-------------------------
   Velocity 1 = 0
@@ -233,21 +233,11 @@ Boundary Condition 1
   Velocity 3 = 0
 End
 
-Boundary Condition 2
-  ComputeNormal = Logical False
-  Name = "sides2"
-  Target Boundaries(1)  = 2
-  ! no slip
-  !-------------------------
-  Velocity 1 = 0
-  Velocity 2 = 0
-  Velocity 3 = 0
-End
 
 !! DON'T CHANGE ORDER OF NEXT 2 BC's!
 !! They are automaticaly created in internal extrusion
 !! bedrock:
-Boundary Condition 3
+Boundary Condition 2
   ComputeNormal = Logical True
   Name = "bedrock"
 
@@ -262,12 +252,9 @@ Boundary Condition 3
   Bedrock = Logical True
 End
 
-Boundary Condition 4
+Boundary Condition 3
   ComputeNormal = Logical False
   Name = "surface"
-  Top Surface = Equals "surfaceDEM1995"
-
-! Referred by: Exported Variable 2 Mask = ...
   Surface = Logical True  
 End
 

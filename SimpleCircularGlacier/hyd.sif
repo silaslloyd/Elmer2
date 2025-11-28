@@ -24,7 +24,14 @@ End
 
 Simulation
   Coordinate System  = "Cartesian 3D"
-  Simulation Type = "Steady State"             
+  Simulation Type = "Transient"             
+
+  Timestepping Method = "bdf"
+  BDF Order = 1
+  Output Intervals(1) = 1         !#OutPutIntervals
+  Timestep Intervals(1) = 50     !#Intervals
+  Timestep Sizes(1) = $1
+
 
   ! Internal extrusion parameters, may be altered.
   Extruded Mesh Levels = Integer $nlayers
@@ -69,20 +76,8 @@ Solver 2
 
 End 
 
+
 Solver 3
-  Exec Solver = "Before Timestep" 
-  Equation = "Normal vector"
-  Procedure = "ElmerIceSolvers" "ComputeNormalSolver"
-  Variable = -dofs 3 "Normal Vector"
-  Optimize Bandwidth = Logical False
-  ComputeAll = Logical False
-
-  Exported Variable 1 = Flow Solution[Velocity:3 Pressure:1]
-
-
-End
-
-Solver 4
   Equation = "1st Order Stokes"
   Procedure = "HydrostaticNSVec" "HydrostaticNSSolver"
   Variable = -dofs 2 "Horizontal Velocity"
@@ -148,7 +143,7 @@ Solver 4
   Linear System Save Slot = "finish"
 End
 
-Solver 5
+Solver 4
   Equation = SaveScalars
   Procedure = "SaveData" "SaveScalars"
   Show Norm = True
@@ -168,6 +163,42 @@ Solver 5
   Filename = $name$.dat
 End
 
+Solver 5
+   Exec Solver = "after timestep"
+   !Exec Solver = "Never"
+   Equation = "Free Surface"
+   Variable = String "Zs"
+   Variable DOFs =  1
+   ! needed for evaluating the contact pressure
+   Exported Variable 1 = -dofs 1 "Zs Residual"
+   ! needed for storing the initial shape (needed for updates)
+   Exported Variable 2 = -dofs 1 "Ref Zs"
+   Procedure = "FreeSurfaceSolver" "FreeSurfaceSolver"
+  ! This would take the contrained points out of solution
+  ! Use in serial run, only
+ !  Before Linsolve = "EliminateDirichlet" "EliminateDirichlet"
+   Linear System Solver = Iterative
+   Linear System Max Iterations = 1500
+   Linear System Iterative Method = BiCGStab
+   Linear System Preconditioning = ILU1
+   Linear System Convergence Tolerance = Real 1.0e-8
+   !Linear System Abort Not Converged = False
+   Linear System Residual Output = 1
+   Nonlinear System Min Iterations = 2
+   Nonlinear System Max Iterations = 100
+   Nonlinear System Convergence Tolerance  = 1.0e-7
+   !Nonlinear System Relaxation Factor = 0.60
+   Steady State Convergence Tolerance = 1.0e-03
+   Stabilization Method = Stabilized
+   !Stabilization Method = Bubbles
+   ! Apply contact problem    
+   Apply Dirichlet = Logical True
+
+! How much the free surface is relaxed
+!  Relaxation Factor = Real 0.90      
+ 
+End
+
 Body 1
   Name = "glacier"
   Equation = 1
@@ -175,8 +206,19 @@ Body 1
   Body Force = 1
 End
 
+Body 2
+  Name = "surface"
+  Equation = 2
+  Material = 2
+  Body Force = 2
+End
+
 Equation 1
-  Active Solvers(4) = 1 2 3 4
+  Active Solvers(3) = 1 2 3
+End
+
+Equation 1
+  Active Solvers(1) = 5
 End
 
 Body Force 1
@@ -184,6 +226,12 @@ Body Force 1
   Flow BodyForce 2 = 0.0 
   Flow BodyForce 3 = $gravity
 End
+
+Body Force 2
+  Zs Accumulation = Variable Coordinate 3
+    Real lua "tx[0]"
+End
+
 
 Material 1
   Name = "Ice"
@@ -211,8 +259,14 @@ Material 1
  ! Glen Enhancement Factor = Real 1.0
 End
 
+Material 2
+  Name = "SMB"
+  Min Zs = Variable "BedrockDEM"
+    Real lua "tx[0] + MINH"
+End
+
 Boundary Condition 1
-  ComputeNormal = Logical False
+  ComputeNormal = Logical True
   Name = "sides"
 !  Target Boundaries(4) = 1 2 3 4
   Target Boundaries(9) = 1 2 3 4 5 6 7 8 9
@@ -249,5 +303,5 @@ Boundary Condition 3
   Name = "surface"
 End 
 
-include shape.sif 
+!nclude shape.sif 
 
