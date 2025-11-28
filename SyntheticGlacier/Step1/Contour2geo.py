@@ -136,11 +136,11 @@ def main(argv):
       x = Contour[:,0]
       y = Contour[:,1]
 
-      x = np.linspace(0,1,100)
+      """ x = np.linspace(0,1,100)
       y = np.linspace(0,1,100)
       for theta in range(100):
          x[theta] = 1000*np.cos(theta/100 * np.pi *2)
-         y[theta] = 1000*np.sin(theta/100 * np.pi *2)
+         y[theta] = 1000*np.sin(theta/100 * np.pi *2) """
 
       if x[0]==x[-1] and y[0]==y[-1]:
         #print('Same first and last points in contour file')
@@ -153,7 +153,7 @@ def main(argv):
    y = np.linspace(0,1,100)
    for theta in range(100):
       x[theta] = 1000*np.cos(theta/100 * np.pi *2)
-      y[theta] = 1000*np.sin(theta/100 * np.pi *2)
+      y[theta] = 1000*np.sin(theta/100 * np.pi *2) 
 
    if x[0]==x[-1] and y[0]==y[-1]:
       #print('Same first and last points in contour file')
