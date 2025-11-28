@@ -49,7 +49,7 @@ Simulation
   Timestepping Method = "bdf"
   BDF Order = 1
   Output Intervals(1) = 10       !#OutPutIntervals
-  Timestep Intervals(1) = 500!#Intervals
+  Timestep Intervals(1) = 50!#Intervals
   Timestep Sizes(1) = $365/365
 
 
@@ -334,7 +334,7 @@ Boundary Condition 3
   ComputeNormal = Logical False
   Name = "surface"
   Body ID = 2
-  Top Surface = Equals "zs"
+  Top Surface = Equals "Zs"
   Surface = Logical True  
 End
 
