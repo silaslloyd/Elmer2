@@ -22,7 +22,7 @@ plt.close('all')
 def bed(x,y,abx, DD, rr, ar, lr, Ly, q1, q2, am, lm): 
     y = (0.5*Ly+q1*x*np.exp(-q2*x))*2*y/Ly + am*np.sin(2*np.pi*x/lm) 
     print(DD)
-    bed = .0 - 0*x - 0*y
+    bed = .0 - 0*x - 0*y +1
     return bed
 
 bed_version = 'bed1'
@@ -85,7 +85,7 @@ plt.show()
 
 
 # Save it as a netcdf grid
-f = nc4.Dataset('SyntBed_DEM_'+bed_version+'.nc','w', format='NETCDF4') 
+f = nc4.Dataset('SurfDEM.nc','w', format='NETCDF4') 
 
 
 f.createDimension('x', len(x))
