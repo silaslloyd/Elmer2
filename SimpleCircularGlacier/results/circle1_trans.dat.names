@@ -3,7 +3,7 @@ Elmer version: 9.0
 Elmer revision: afd75d4
 Elmer compilation date: 2025-09-26
 Solver input file: mlb_trans.sif
-File started at: 2025/11/28 20:43:30
+File started at: 2025/11/28 20:53:58
  
 Variables in columns of matrix: 
    1: res: linsys cpu time flow solution
