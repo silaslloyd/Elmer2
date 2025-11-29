@@ -50,7 +50,7 @@ Simulation
   BDF Order = 1
   Output Intervals(1) = 10       !#OutPutIntervals
   Timestep Intervals(1) = 50!#Intervals
-  Timestep Sizes(1) = $365/365
+  Timestep Sizes(1) = $0.00001/365
 
 
 
@@ -338,4 +338,4 @@ Boundary Condition 3
   Surface = Logical True  
 End
 
-include shape.sif
+!include shape.sif
