@@ -1,6 +1,6 @@
 // characteristic mesh parameters
-r = 1.0e5;
-c1 = 0.05e5;
+r = 1.8e5;
+c1 = 0.1e5;
 // points for the half circle
 Point(1) = {0, 0, 0, c1};
 Point(2) = {0, r, 0, c1};

@@ -23,6 +23,9 @@ $directmethod="mumps" !cPardiso"
 ! with the formula for A works only if T > -10
 $Tc = -1.0
 
+
+
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! HEADER
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -44,13 +47,14 @@ End
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Simulation
   Coordinate System  = "Cartesian 3D"
-  Simulation Type = "Transient"    
+  Simulation Type = "Transient"
+
 
   Timestepping Method = "bdf"
   BDF Order = 1
-  Output Intervals(1) = 10       !#OutPutIntervals
-  Timestep Intervals(1) = 50!#Intervals
-  Timestep Sizes(1) = $365/365
+  Output Intervals(1) = 1  !#OutPutIntervals
+  Timestep Intervals(1) = 50
+  Timestep Sizes(1) = $1e-5
 
 
 
@@ -102,19 +106,14 @@ Solver 1
 
   Displacement Mode = Logical False
   Correct Surface = Logical True
-  Minimum Height = Real 5.0
 
-  !orrect Surface Mask = String "Glaciated"
+  Minimum Height = Real $MinH
+
+  Correct Surface Mask = String "Glaciated"
   Dot Product Tolerance = 1.0e-3
 
-  ! These are needed to host the variables that are read in
-  !ariable = MeshUpdate
+  variable = MeshUpdate
 
- !xported Variable 1 = "bedrockDEM"
- !xported Variable 1 Mask = String "BedRock"
-
-! Exported Variable 2 = "surfaceDEM1995"
-! Exported Variable 2 Mask = String "Surface"
 End
 
 
@@ -128,29 +127,40 @@ Solver 2
   Operator 2 = height
 End 
 
-
 Solver 3
-  Equation = "Navier-Stokes"
-  Linear System Solver = Direct     
-  Linear System Direct Method = MUMPS!umfpack
-  Nonlinear System Max Iterations = Integer 50
-  Nonlinear System Convergence Tolerance  = 1.0e-5
-  Nonlinear System Newton After Iterations = 5
-  Nonlinear System Newton After Tolerance = 1.0e-02
-  Nonlinear System Relaxation Factor = $2/3
-  Nonlinear System Reset Newton = Logical True
-    
-  Steady State Convergence Tolerance = Real 1.0e-4
+  Equation = "Stokes-Vec"
+  Procedure = "IncompressibleNSVec" "IncompressibleNSSolver"
+  Div-Curl Discretization = Logical False
 
-  Stabilization Method = String Stabilized
+  Optimize Bandwidth = Logical True
+  Flow Model = Stokes
 
-  Flow Model = String "Stokes" ! comment, if you want to have acceleration terms
+  include nonlinsys.sif
+  include gcr.sif
+  !include mumps.sif
+
+  ! Convergence on timelevel (not required here)
+  !---------------------------------------------
+  !Relative Integration Order = -1
+  Number of Integration Points = Integer 44 ! 21, 28, 44, 64, ...
+
+  Save Viscosity = Logical True
+  Save Slip = Logical True
+
 ! Some timing info
   Boundary Assembly Timing = Logical True
   Bulk Assembly Timing = Logical True
   Solver Timing = Logical True
   Linear System Timing = Logical True
+
+
+! Activate this to save the linear system: linsys_a.dat and linsys_b.dat
+!  Linear System Save = Logical True
+! This one makes the saving happen only after all nonlin iterations. 
+  Linear System Save Slot = "finish"
 End
+
+
 
 Solver 4
   Exec Solver = "Before Timestep"
@@ -162,7 +172,7 @@ Solver 4
 End
 
 Solver 5
-   Exec Solver = "after timestep"
+   Exec Solver = "always"
    !Exec Solver = "Never"
    Equation = "Free Surface"
    Variable = String "Zs"
@@ -193,7 +203,7 @@ Solver 5
    Apply Dirichlet = Logical True
 
 ! How much the free surface is relaxed
-!  Relaxation Factor = Real 0.90      
+ !Relaxation Factor = Real 0.90      
  
 End
 
@@ -238,6 +248,7 @@ End
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Initial Condition 1
   ! Initial velocity is not really needed when using newtonian start
+
   Velocity 1 = 0.0
   Velocity 2 = 0.0
   Velocity 3 = 0.0
@@ -245,12 +256,12 @@ End
 
 Initial Condition 2
   $alfa=0
-  $h0=1000
-  $dh=900.
+  $h0=2000
+  $dh=1980
   $rad=80000.0
-
-  Zs  Variable "Coordinate"
-    Real MATC "h0 -dh*(tx(0)^2+tx(1)^2)/rad^2-alfa*tx(0)"
+   !Zs = Real 1000
+  Zs = Variable "Coordinate"
+    Real MATC "h0-dh*((tx(0)^2+tx(1)^2)/rad^2)"
 End
 
 
@@ -265,8 +276,12 @@ Body Force 1
 End
 
 Body Force 2
-  Accumulation Variable "Coordinate"
-	Real MATC "10*(-(tx(0)^2+tx(1)^2)/rad^2 + 0.5*tx(0)^0)"
+  Name = "MB"
+  Zs Accumulation Flux 1 = Real 0.0
+  Zs Accumulation Flux 2 = Real 0.0
+  Zs Accumulation Flux 3 = Real 0.0
+ Zs Accumulation Flux 3 = Variable "Coordinate", glaciated
+   Real MATC "1e1*(-(tx(0)^2+tx(1)^2)/rad^2 +0.7*tx(0)^0)"
 End
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -282,8 +297,8 @@ Material 1
 
   ! Nonnewtonian viscosity
   Viscosity Model = String "Glen"
-  Glen Exponent = Real 3.0
-  Critical Shear Rate =  Real 1.0E-10
+ Glen Exponent = Real 3.0
+ Critical Shear Rate =  Real 1.0E-10
   ! Paterson value in MPa^-3a^-1
   Limit Temperature = Real -10.0
   Rate Factor 1 = Real $A1 
@@ -292,11 +307,13 @@ Material 1
   Activation Energy 2 = Real $Q2 
   Glen Enhancement Factor = Real 1.0
   Constant Temperature = Real $Tc
+  Relative Temperature = Real $Tc
 End
 
 Material 2
   Name = "SMB"
-  Min Zs = Real 5.0
+Min Zs = Real $MinH
+
 End
 
 Boundary Condition 1
@@ -305,9 +322,10 @@ Boundary Condition 1
   Target Boundaries(4) = 1 2 3 4
   ! no slip
   !-------------------------
-  Velocity 1 = 0
-  Velocity 2 = 0
-  Velocity 3 = 0
+Velocity 1 = 0
+Velocity 2 = 0
+Velocity 3 = 0
+Zs = Real $MinH
 End
 
 
@@ -317,8 +335,9 @@ End
 Boundary Condition 2
   ComputeNormal = Logical True
   Name = "bedrock"
-  Bottom Surface = Variable "Coordinate"
-    Real MATC "-0*tx(0)"
+  Zb = Variable "Coordinate"
+      Real MATC "0*tx(0)"
+  Bottom Surface = Equals Zb
   ! No-slip velocity conditions
   Velocity 1 = Real 0.0
   Velocity 2 = Real 0.0
@@ -335,7 +354,7 @@ Boundary Condition 3
   Name = "surface"
   Body ID = 2
   Top Surface = Equals "Zs"
+  Body ID = 2
   Surface = Logical True  
 End
 
-include shape.sif

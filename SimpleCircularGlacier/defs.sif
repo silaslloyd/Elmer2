@@ -11,7 +11,7 @@ $A1 = 2.89165e-13*yearinsec*1.0e18
 $A2 = 2.42736e-02*yearinsec*1.0e18 
 $Q1 = 60.0e3
 $Q2 = 115.0e3
-
+$MinH =  1
 ! Temperature of the simulation in Celsius
 ! with the formula for A works only if T > -10
 $Tc = -1.0
