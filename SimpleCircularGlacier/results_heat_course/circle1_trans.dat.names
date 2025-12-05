@@ -1,0 +1,12 @@
+Metadata for SaveScalars file: results/circle1_trans.dat
+Elmer version: 9.0
+Elmer revision: afd75d4
+Elmer compilation date: 2025-09-26
+Solver input file: mlb_heat.sif
+File started at: 2025/12/03 14:57:08
+ 
+Variables in columns of matrix: 
+   1: res: linsys cpu time flow solution
+   2: res: linsys real time flow solution
+   3: res: solver cpu time stokes-vec
+   4: res: solver real time stokes-vec

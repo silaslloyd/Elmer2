@@ -2,8 +2,8 @@ Metadata for SaveScalars file: results/circle1_trans.dat
 Elmer version: 9.0
 Elmer revision: afd75d4
 Elmer compilation date: 2025-09-26
-Solver input file: mlb_trans.sif
-File started at: 2025/12/02 13:18:44
+Solver input file: mlb_heat.sif
+File started at: 2025/12/04 17:39:01
  
 Variables in columns of matrix: 
    1: res: linsys cpu time flow solution

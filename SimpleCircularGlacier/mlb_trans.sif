@@ -15,9 +15,17 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!
 ! DEFINITIONS used in run
 !!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!---LUA BEGIN
+! assert(loadfile('./icematerial.lua'))()
+! assert(loadfile('./accumulation.lua'))()
+!---LUA END
+
+
+
 $name="Circle1_trans"
-include defs.sif
-$directmethod="mumps" !cPardiso"
+ !include defs.sif
+ $directmethod="mumps" !cPardiso"
 
 ! Temperature of the simulation in Celsius
 ! with the formula for A works only if T > -10
@@ -52,9 +60,10 @@ Simulation
 
   Timestepping Method = "bdf"
   BDF Order = 1
-  Output Intervals(1) = 1  !#OutPutIntervals
-  Timestep Intervals(1) = 50
-  Timestep Sizes(1) = $1e-5
+  Output Intervals(1) = 1
+  !#OutPutIntervals
+  Timestep Intervals(1) = 500
+  Timestep Sizes(1) = $1
 
 
 
@@ -107,7 +116,7 @@ Solver 1
   Displacement Mode = Logical False
   Correct Surface = Logical True
 
-  Minimum Height = Real $MinH
+  Minimum Height = Real 20.0
 
   Correct Surface Mask = String "Glaciated"
   Dot Product Tolerance = 1.0e-3
@@ -198,7 +207,7 @@ Solver 5
    !Nonlinear System Relaxation Factor = 0.60
    Steady State Convergence Tolerance = 1.0e-03
    Stabilization Method = Stabilized
-   !Stabilization Method = Bubbles
+  Stabilization Method = Bubbles
    ! Apply contact problem    
    Apply Dirichlet = Logical True
 
@@ -255,13 +264,8 @@ Initial Condition 1
 End
 
 Initial Condition 2
-  $alfa=0
-  $h0=2000
-  $dh=1980
-  $rad=80000.0
-   !Zs = Real 1000
-  Zs = Variable "Coordinate"
-    Real MATC "h0-dh*((tx(0)^2+tx(1)^2)/rad^2)"
+  Zs Accumulation Flux 3 = Variable "Coordinate"
+   Real LUA "acc(tx[0], tx[1])"
 End
 
 
@@ -279,7 +283,7 @@ Body Force 2
   Name = "MB"
   Zs Accumulation Flux 1 = Real 0.0
   Zs Accumulation Flux 2 = Real 0.0
-  Zs Accumulation Flux 3 = Real 0.0
+  !s Accumulation Flux 3 = Real 0.0
  Zs Accumulation Flux 3 = Variable "Coordinate", glaciated
    Real MATC "1e1*(-(tx(0)^2+tx(1)^2)/rad^2 +0.7*tx(0)^0)"
 End
@@ -297,7 +301,7 @@ Material 1
 
   ! Nonnewtonian viscosity
   Viscosity Model = String "Glen"
- Glen Exponent = Real 3.0
+ Glen Exponent = Real 1.0
  Critical Shear Rate =  Real 1.0E-10
   ! Paterson value in MPa^-3a^-1
   Limit Temperature = Real -10.0
@@ -312,7 +316,7 @@ End
 
 Material 2
   Name = "SMB"
-Min Zs = Real $MinH
+Min Zs = Real 20.0
 
 End
 
@@ -322,10 +326,10 @@ Boundary Condition 1
   Target Boundaries(4) = 1 2 3 4
   ! no slip
   !-------------------------
-Velocity 1 = 0
-Velocity 2 = 0
-Velocity 3 = 0
-Zs = Real $MinH
+!Velocity 1 = 0
+!Velocity 2 = 0
+!Velocity 3 = 0
+!Zs = Real 20.0
 End
 
 
@@ -357,4 +361,3 @@ Boundary Condition 3
   Body ID = 2
   Surface = Logical True  
 End
-
